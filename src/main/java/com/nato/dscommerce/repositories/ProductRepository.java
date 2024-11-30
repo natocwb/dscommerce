@@ -1,4 +1,4 @@
-package com.nato.dscommerce;
+package com.nato.dscommerce.repositories;
 
 import com.nato.dscommerce.entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
