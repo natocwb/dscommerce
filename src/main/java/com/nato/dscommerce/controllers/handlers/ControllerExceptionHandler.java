@@ -1,11 +1,16 @@
 package com.nato.dscommerce.controllers.handlers;
 
 import com.nato.dscommerce.dto.CustomError;
+import com.nato.dscommerce.dto.ValidationError;
 import com.nato.dscommerce.services.exceptions.DatabaseException;
 import com.nato.dscommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -24,6 +29,27 @@ public class ControllerExceptionHandler {
     public ResponseEntity<CustomError> database(DatabaseException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.BAD_REQUEST;
         CustomError err = new CustomError( e.getMessage() ,Instant.now(), request.getRequestURI(), status.value());
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<CustomError> methodArgumentNotValid(MethodArgumentNotValidException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+        ValidationError err = new ValidationError( e.getMessage() ,Instant.now(), request.getRequestURI(), status.value());
+        for(FieldError f : e.getBindingResult().getFieldErrors()){
+            err.addError(f.getField(), f.getDefaultMessage());
+            }
+
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<CustomError> methodArgumentNotValid(ConstraintViolationException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
+        ValidationError err = new ValidationError( e.getMessage() ,Instant.now(), request.getRequestURI(), status.value());
+        for(ConstraintViolation<?> v : e.getConstraintViolations()) {
+            err.addError(v.getPropertyPath().toString(), v.getMessage());
+        }
         return ResponseEntity.status(status).body(err);
     }
 

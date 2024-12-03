@@ -1,6 +1,9 @@
 package com.nato.dscommerce.entities;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.util.HashSet;
 import java.util.List;
@@ -13,9 +16,14 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Size(min = 3, max = 80, message = "Name must have between 3 and 80 characters")
+    @NotBlank(message = "Name cannot be empty")
     private String name;
+    @NotBlank(message = "Description cannot be empty")
+    @Size(min = 10, max = 255, message = "Description must have between 10 and 255 characters")
     @Column(columnDefinition = "TEXT")
     private String description;
+    @Positive(message = "Price must be greater than zero")
     private Double price;
     private String imgUrl;
 
