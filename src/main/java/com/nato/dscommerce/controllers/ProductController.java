@@ -25,8 +25,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAll(Pageable pageable) {
-        Page<ProductDTO> result = service.findAll(pageable);
+    public ResponseEntity<Page<ProductDTO>> findAll(@RequestParam(required = false, defaultValue = "") String name, Pageable pageable) {
+        Page<ProductDTO> result = service.findAll(name,pageable);
         return ResponseEntity.ok(result);
     }
 

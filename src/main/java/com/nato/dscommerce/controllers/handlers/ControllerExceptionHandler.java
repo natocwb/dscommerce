@@ -44,7 +44,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<CustomError> methodArgumentNotValid(ConstraintViolationException e, HttpServletRequest request) {
+    public ResponseEntity<CustomError> constraintViolation(ConstraintViolationException e, HttpServletRequest request) {
         HttpStatus status = HttpStatus.UNPROCESSABLE_ENTITY;
         ValidationError err = new ValidationError( e.getMessage() ,Instant.now(), request.getRequestURI(), status.value());
         for(ConstraintViolation<?> v : e.getConstraintViolations()) {
