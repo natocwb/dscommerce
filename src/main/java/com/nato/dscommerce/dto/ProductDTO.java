@@ -1,13 +1,31 @@
 package com.nato.dscommerce.dto;
 
+import com.nato.dscommerce.entities.Category;
 import com.nato.dscommerce.entities.Product;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ProductDTO {
     private Long id;
+    @NotBlank(message = "Description cannot be empty")
+    @Size(min = 3, max = 80, message = "Name must have between 3 and 80 characters")
     private String name;
+    @NotBlank(message = "Description cannot be empty")
+    @Size(min = 10, max = 255, message = "Description must have between 10 and 255 characters")
+    @Column(columnDefinition = "TEXT")
     private String description;
+    @Positive(message = "Price must be greater than zero")
     private Double price;
     private String imgUrl;
+
+    @NotEmpty(message = "Categories cannot be empty")
+    private List<CategoryDTO> categories = new ArrayList<>();
 
 
     public ProductDTO(Long id, String name, String description, Double price, String imgUrl) {
@@ -24,6 +42,9 @@ public class ProductDTO {
         description = product.getDescription();
         price = product.getPrice();
         imgUrl = product.getImgUrl();
+        for (Category c : product.getCategories()) {
+            categories.add(new CategoryDTO(c));
+        }
     }
 
     public Long getId() {
@@ -64,5 +85,9 @@ public class ProductDTO {
 
     public void setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
+    }
+
+    public List<CategoryDTO> getCategories() {
+        return categories;
     }
 }

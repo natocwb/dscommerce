@@ -1,6 +1,8 @@
 package com.nato.dscommerce.services;
 
+import com.nato.dscommerce.dto.CategoryDTO;
 import com.nato.dscommerce.dto.ProductMinDTO;
+import com.nato.dscommerce.entities.Category;
 import com.nato.dscommerce.repositories.ProductRepository;
 import com.nato.dscommerce.dto.ProductDTO;
 import com.nato.dscommerce.entities.Product;
@@ -76,5 +78,11 @@ public class ProductService {
         product.setDescription(dto.getDescription());
         product.setPrice(dto.getPrice());
         product.setImgUrl(dto.getImgUrl());
+        product.getCategories().clear();
+        for (CategoryDTO c : dto.getCategories()) {
+            Category category = new Category();
+            category.setId(c.getId());
+            product.getCategories().add(category);
+        }
     }
 }
