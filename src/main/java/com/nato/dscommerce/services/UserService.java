@@ -2,16 +2,21 @@ package com.nato.dscommerce.services;
 
 import java.util.List;
 
+import com.nato.dscommerce.dto.UserDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import com.nato.dscommerce.entities.Role;
 import com.nato.dscommerce.entities.User;
 import com.nato.dscommerce.projections.UserDetailsProjection;
 import com.nato.dscommerce.repositories.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -34,5 +39,19 @@ public class UserService implements UserDetailsService {
 			user.addRole(new Role(projection.getRoleId(), projection.getAuthority()));
 		}
 		return user;
+	}
+	protected User authenticate() {
+		try {
+			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+			Jwt jwtPrincipal = (Jwt) authentication.getPrincipal();
+			String username = jwtPrincipal.getClaim("username");
+			return repository.findByEmail(username).get();
+		} catch (Exception e) {
+			throw new UsernameNotFoundException("Email not found");
+		}
+	}
+	@Transactional(readOnly = true)
+	public UserDTO getMe(){
+		return new UserDTO(authenticate());
 	}
 }

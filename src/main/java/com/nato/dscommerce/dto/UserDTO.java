@@ -6,6 +6,7 @@ import java.util.List;
 
 
 import com.nato.dscommerce.entities.User;
+import org.springframework.security.core.GrantedAuthority;
 
 public class UserDTO {
 
@@ -30,7 +31,9 @@ public class UserDTO {
 		email = entity.getEmail();
 		phone = entity.getPhone();
 		birthDate = entity.getBirthDate();
-
+		for(GrantedAuthority role : entity.getAuthorities()) {
+			roles.add(role.getAuthority());
+		}
 	}
 
 	public Long getId() {
