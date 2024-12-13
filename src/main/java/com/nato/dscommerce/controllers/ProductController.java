@@ -1,6 +1,7 @@
 package com.nato.dscommerce.controllers;
 
 import com.nato.dscommerce.dto.ProductDTO;
+import com.nato.dscommerce.dto.ProductMinDTO;
 import com.nato.dscommerce.services.ProductService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<ProductDTO>> findAll(@RequestParam(required = false, defaultValue = "") String name, Pageable pageable) {
-        Page<ProductDTO> result = service.findAll(name,pageable);
+    public ResponseEntity<Page<ProductMinDTO>> findAll(@RequestParam(required = false, defaultValue = "") String name, Pageable pageable) {
+        Page<ProductMinDTO> result = service.findAll(name,pageable);
         return ResponseEntity.ok(result);
     }
     @PreAuthorize("hasRole('ROLE_ADMIN')")
