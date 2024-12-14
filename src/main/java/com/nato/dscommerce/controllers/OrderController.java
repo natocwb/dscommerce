@@ -1,8 +1,6 @@
 package com.nato.dscommerce.controllers;
 
 import com.nato.dscommerce.dto.OrderDTO;
-import com.nato.dscommerce.dto.ProductDTO;
-import com.nato.dscommerce.entities.Order;
 import com.nato.dscommerce.services.OrderService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +16,13 @@ import java.net.URI;
 public class OrderController {
     @Autowired
     private OrderService service;
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN','ROLE_CLIENT')")
     @GetMapping("/{id}")
     public ResponseEntity<OrderDTO> FindById(@PathVariable Long id) {
         OrderDTO result = service.findById(id);
         return ResponseEntity.ok(result);
     }
-    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
     @PostMapping
     public ResponseEntity<OrderDTO> insert(@Valid @RequestBody OrderDTO dto) {
         dto = service.insert(dto);

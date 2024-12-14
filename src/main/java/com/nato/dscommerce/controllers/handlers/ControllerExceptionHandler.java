@@ -3,6 +3,7 @@ package com.nato.dscommerce.controllers.handlers;
 import com.nato.dscommerce.dto.CustomError;
 import com.nato.dscommerce.dto.ValidationError;
 import com.nato.dscommerce.services.exceptions.DatabaseException;
+import com.nato.dscommerce.services.exceptions.ForbiddenException;
 import com.nato.dscommerce.services.exceptions.ResourceNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolation;
@@ -50,6 +51,13 @@ public class ControllerExceptionHandler {
         for(ConstraintViolation<?> v : e.getConstraintViolations()) {
             err.addError(v.getPropertyPath().toString(), v.getMessage());
         }
+        return ResponseEntity.status(status).body(err);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<CustomError> forbidden(ForbiddenException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.FORBIDDEN;
+        CustomError err = new CustomError( e.getMessage() ,Instant.now(), request.getRequestURI(), status.value());
         return ResponseEntity.status(status).body(err);
     }
 

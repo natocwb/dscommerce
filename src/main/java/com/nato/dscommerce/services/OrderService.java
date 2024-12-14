@@ -2,14 +2,12 @@ package com.nato.dscommerce.services;
 
 import com.nato.dscommerce.dto.OrderDTO;
 import com.nato.dscommerce.dto.OrderItemDTO;
-import com.nato.dscommerce.dto.ProductDTO;
 import com.nato.dscommerce.entities.*;
 import com.nato.dscommerce.repositories.OrderItemRepository;
 import com.nato.dscommerce.repositories.OrderRepository;
 import com.nato.dscommerce.repositories.ProductRepository;
 import com.nato.dscommerce.services.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,12 +27,15 @@ public class OrderService {
     @Autowired
     private OrderItemRepository orderItemRepository;
 
+    @Autowired
+    private AuthService authService;
+
     @Transactional(readOnly = true)
     public OrderDTO findById(Long id) {
         Order order = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Order not found"));
-        OrderDTO dto = new OrderDTO(order);
-        return dto;
+        authService.validateSelfOrAdmin(order.getClient().getId());
+        return new OrderDTO(order);
     }
 
     @Transactional
@@ -44,7 +45,7 @@ public class OrderService {
         order.setStatus(OrderStatus.WAITING_PAYMENT);
         User user = userService.authenticate();
         order.setClient(user);
-        
+
         for (OrderItemDTO p : dto.getItems()) {
             Product product = productRepository.getReferenceById(p.getProductId());
             OrderItem orderItem = new OrderItem(order, product, p.getQuantity(),product.getPrice());
